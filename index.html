@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S2C 2025 - Interactive Fundraising Presentation</title>
+    <!-- Chosen Palette: Custom Palette (Purple, Yellow, Red, Green) -->
+    <!-- Application Structure Plan: A thematic, single-page scrolling narrative. The structure guides users from the core problem to S2C's multi-faceted solution, then showcases the tangible impact with animated stats, and culminates in an an interactive budget visualization. This storytelling approach is designed to build a compelling case for potential donors, making the information digestible and engaging through interactive tabs for the solutions and a currency toggle for the financial data, which is more persuasive than a static report. -->
+    <!-- Visualization & Content Choices:
+        - The Challenge: Presented with strong typography to create urgency. Goal: Inform. Method: HTML/CSS.
+        - The Solution: A tabbed interface to organize the three core projects (Aurora, DMS, Mentorship). Goal: Organize/Explain. Interaction: User clicks to reveal project details. Justification: Prevents overwhelming the user with a long text block and encourages active exploration. Library: Vanilla JS.
+        - The Impact: Key metrics displayed in cards with numbers that animate on scroll. Goal: Inform/Impress. Interaction: Scroll-triggered animation. Justification: Creates a dynamic and memorable "wow" factor, highlighting key outcomes. Library: Vanilla JS (Intersection Observer).
+        - The Investment (Budget): A donut chart visualizing cost breakdown, paired with a detailed table. Goal: Compare/Inform. Interaction: A toggle switches chart and table data between USD and NGN. Justification: Provides clarity and caters to different audiences, making complex financial data easy to understand. Library: Chart.js.
+        - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap');
+
+        .bg-primary { background-color: #4A154B; }
+        .bg-accent-yellow { background-color: #FECD35; }
+        .bg-accent-red { background-color: #F7323A; }
+        .text-accent-yellow { color: #FECD35; }
+        .text-accent-green { color: #0DBF49; } /* Updated accent color */
+        .text-primary { color: #4A154B; } /* Explicitly defined text-primary */
+        .border-accent-yellow { border-color: #FECD35; }
+
+        .tab-button.active {
+            background-color: #0DBF49; /* Updated to new accent color */
+            color: #4A154B; /* Primary color for text on active tab */
+        }
+        .tab-button {
+            transition: all 0.3s ease;
+        }
+        .chart-container {
+            position: relative;
+            margin: auto;
+            height: 40vh;
+            width: 80vw;
+            max-width: 400px;
+            max-height: 400px;
+        }
+        .scale-up-bounce {
+            animation: scaleUpBounce 0.8s ease-out forwards;
+        }
+        @keyframes scaleUpBounce {
+            0% { transform: scale(0.9); opacity: 0; }
+            70% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <!-- Header & Hero Section -->
+    <header class="bg-primary text-white">
+        <div class="container mx-auto px-6 py-16 text-center">
+            <img src="https://drive.google.com/drive/folders/1FeSTOjpfuVToQmp9zY1zfENOo2vrVZKQ" onerror="this.onerror=null;this.src='uploaded:Frame 7.png-4d425871-b1f5-47d5-9866-8a82e3d7992f';" alt="S2C Logo" class="mx-auto mb-6 w-48 md:w-64 h-auto scale-up-bounce">
+            <h1 class="text-4xl md:text-6xl font-extrabold leading-tight scale-up-bounce text-white">
+                <span class="text-white">Be a </span><span class="text-accent-yellow">Changemaker</span>. <span class="text-white">Invest in S2C</span>!
+            </h1>
+            <p class="mt-4 text-lg md:text-xl max-w-3xl mx-auto text-primary">
+                We're a youth-led movement empowering secondary school students to discover their potential, make a real difference, and build an amazing future!
+            </p>
+        </div>
+    </header>
+
+    <main>
+        <!-- The Urgent Challenge Section -->
+        <section id="challenge" class="py-16 md:py-24">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="text-3xl md:text-4xl font-bold text-primary mb-4">The Urgent Challenge</h2>
+                <p class="text-lg md:text-xl max-w-4xl mx-auto mb-8">
+                    Research unequivocally shows that the <strong class="text-accent-red">environment is the single largest barrier to success</strong> for students in underserved communities. When presented with limited or negative choices, young people often mirror their surroundings.
+                </p>
+                <div class="max-w-4xl mx-auto grid md:grid-cols-2 gap-6 text-left">
+                    <div class="bg-red-50 border-l-4 border-accent-red p-6 rounded-r-lg">
+                        <p class="text-lg text-gray-700">Where abuse persists, they can become abusers. Where fraud exists, they can become fraudsters. This creates a destructive cycle we must break.</p>
+                    </div>
+                    <div class="bg-green-50 border-l-4 border-green-500 p-6 rounded-r-lg">
+                         <p class="text-lg text-gray-700">We believe we share the same society with these youngsters. It is imperative to help them to secure our collective future.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Our Solution Section -->
+        <section id="solution" class="bg-gray-100 py-16 md:py-24">
+            <div class="container mx-auto px-6">
+                <h2 class="text-3xl md:text-4xl font-bold text-primary mb-12 text-center">Our Transformative Plan - Project 2025</h2>
+                <p class="text-lg md:text-xl text-center max-w-4xl mx-auto mb-12">Our core mission is to renew the minds of students and give them a way out by dramatically increasing their awareness of positive choices. We achieve this through three strategically interconnected projects.</p>
+
+                <div class="max-w-5xl mx-auto">
+                    <!-- Tabs -->
+                    <div class="flex justify-center border-b-2 border-gray-300 mb-8">
+                        <button class="tab-button active text-lg font-bold py-3 px-6" onclick="openTab('aurora')">Project Aurora</button>
+                        <button class="tab-button text-lg font-bold py-3 px-6" onclick="openTab('dms')">Digital & Mindset School</button>
+                        <button class="tab-button text-lg font-bold py-3 px-6" onclick="openTab('mentorship')">Mentorship</button>
+                    </div>
+
+                    <!-- Tab Content -->
+                    <div id="aurora" class="tab-content">
+                        <h3 class="text-2xl font-bold text-primary mb-4">Phase 1: Project Aurora (School Tour)</h3>
+                        <p class="mb-4 text-lg">This is our foundation for change. It's a school outreach program built to help students in Ogun State develop a positive attitude, better problem-solving skills, and a wider view of career options.</p>
+                        <ul class="list-disc list-inside space-y-2 text-lg">
+                            <li>Engaging, one-day interactive fun workshops.</li>
+                            <li>Direct meetings with professionals from diverse fields.</li>
+                            <li>Delivers crucial life skills for today's world.</li>
+                            <li class="font-bold">Proven Impact: Successfully implemented in 7 public high schools, reaching over <span class="text-accent-green font-extrabold">1,100</span> students.</li>
+                        </ul>
+                    </div>
+
+                    <div id="dms" class="tab-content hidden">
+                        <h3 class="text-2xl font-bold text-primary mb-4">Phase 2: Digital & Mindset School (DMS)</h3>
+                        <p class="mb-4 text-lg">Following the tours, we host a rigorous 6-day intensive training program for outstanding students identified during Project Aurora, cultivating a cohort of young leaders.</p>
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div>
+                                <h4 class="font-bold text-xl mb-2">Digital Skills Training:</h4>
+                                <ul class="list-disc list-inside space-y-1">
+                                    <li>Phone Photography & Videography</li>
+                                    <li>Amazon KDP</li>
+                                    <li>Social Media Marketing</li>
+                                    <li>Copywriting</li>
+                                    <li>Web Development (WordPress)</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-xl mb-2">Mindset Development:</h4>
+                                <ul class="list-disc list-inside space-y-1">
+                                    <li>Personal Effectiveness & Grit</li>
+                                    <li>Storytelling & Networking</li>
+                                    <li>Critical Thinking & Emotional Intelligence</li>
+                                    <li>Change Management & Communication</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <p class="mt-4 text-lg bg-yellow-50 p-4 rounded-lg">Crucially, students complete a tangible community impact project aligned with one or more <strong class="text-accent-yellow font-bold">UN Sustainable Development Goals (SDGs)</strong>.</p>
+                    </div>
+
+                    <div id="mentorship" class="tab-content hidden">
+                        <h3 class="text-2xl font-bold text-primary mb-4">Phase 3: Mentorship Program</h3>
+                        <p class="mb-4 text-lg">For students who successfully participate, we implement a comprehensive three-month virtual mentorship initiative to ensure lasting impact.</p>
+                        <ul class="list-disc list-inside space-y-2 text-lg">
+                            <li>Each student is strategically paired with two dedicated mentors.</li>
+                            <li>One mentor focuses on digital skills, the other on growth mindset.</li>
+                            <li>This personalized approach guarantees tailored guidance and support.</li>
+                            <li>Includes structured learning plans, networking, and career guidance.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Impact Section -->
+        <section id="impact" class="py-16 md:py-24">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="text-3xl md:text-4xl font-bold text-primary mb-12">Our Ambitious Expected Outcomes</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
+                    <div class="bg-white p-6 rounded-lg shadow-lg">
+                        <div class="text-5xl font-extrabold text-accent-yellow" data-target="1000">0</div>
+                        <p class="mt-2 text-lg font-medium">Students Impacted (School Tour)</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-lg">
+                        <div class="text-5xl font-extrabold text-accent-yellow" data-target="100">0</div>
+                        <p class="mt-2 text-lg font-medium">Students Trained (DMS)</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-lg">
+                        <div class="text-5xl font-extrabold text-accent-yellow" data-target="500">0</div>
+                        <p class="mt-2 text-lg font-medium">Students Engaged (Conference)</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-lg">
+                        <div class="text-5xl font-extrabold text-accent-yellow" data-target="50">0</div>
+                        <p class="mt-2 text-lg font-medium">Students Mentored</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- The Investment Section -->
+        <section id="budget" class="bg-primary text-white py-16 md:py-24">
+            <div class="container mx-auto px-6">
+                <h2 class="text-3xl md:text-4xl font-bold text-primary text-center mb-4">Your Investment in a Brighter Future</h2>
+                <p class="text-lg md:text-xl text-center max-w-4xl mx-auto mb-12 text-white">Your contribution, no matter the size, will make a tangible difference. Here’s a detailed breakdown of our projected costs for the S2C 2025 Projects.</p>
+
+                <div class="flex justify-center mb-8">
+                     <div class="bg-gray-700 p-1 rounded-full flex items-center">
+                        <button id="usd-btn" class="px-6 py-2 rounded-full text-lg font-bold bg-accent-yellow text-primary" onclick="updateBudget('USD')">USD ($)</button>
+                        <button id="ngn-btn" class="px-6 py-2 rounded-full text-lg font-bold text-white" onclick="updateBudget('NGN')">NGN (₦)</button>
+                    </div>
+                </div>
+
+                <div class="grid lg:grid-cols-5 gap-8 items-center">
+                    <div class="lg:col-span-2">
+                        <div class="chart-container">
+                            <canvas id="budgetChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-3">
+                        <div class="bg-gray-100 text-gray-800 p-4 sm:p-6 rounded-lg shadow-2xl">
+                             <table class="w-full text-left">
+                                <thead>
+                                    <tr class="border-b-2 border-gray-300">
+                                        <th class="py-2 pr-2 sm:pr-4 text-sm sm:text-base">Category</th>
+                                        <th id="amount-header" class="py-2 text-right text-sm sm:text-base">Amount (US$)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="budget-table-body">
+                                </tbody>
+                                <tfoot>
+                                    <tr class="border-t-2 border-gray-400 font-bold">
+                                        <td class="py-2 pr-2 sm:pr-4">Subtotal</td>
+                                        <td id="subtotal" class="py-2 text-right"></td>
+                                    </tr>
+                                    <tr class="font-bold">
+                                        <td class="py-2 pr-2 sm:pr-4">Contingencies (2%)</td>
+                                        <td id="contingencies" class="py-2 text-right"></td>
+                                    </tr>
+                                    <tr class="border-t-2 border-gray-400 bg-yellow-100 font-extrabold text-lg">
+                                        <td class="py-3 pr-2 sm:pr-4">TOTAL</td>
+                                        <td id="total" class="py-3 text-right"></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Call to Action -->
+        <section id="cta" class="py-20 bg-accent-yellow">
+             <div class="container mx-auto px-6 text-center">
+                 <h2 class="text-3xl md:text-4xl font-extrabold text-primary mb-6">Partner With Us to Build a Brighter Future</h2>
+                 <p class="text-xl text-primary max-w-3xl mx-auto mb-8">By supporting S2C, you are directly investing in empowering the next generation of leaders, breaking cycles of negative influence, and building a stronger, more resilient society for all.</p>
+                 <a href="mailto:contact@s2c.org" class="bg-primary text-white text-xl font-bold py-4 px-10 rounded-full inline-block hover:bg-gray-800 transition-colors duration-300">
+                     Contact Us to Invest
+                 </a>
+             </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-800 text-white py-6">
+        <div class="container mx-auto px-6 text-center">
+            <p>&copy; 2025 Students to Changemakers (S2C). All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Tab functionality
+        function openTab(tabName) {
+            const contents = document.getElementsByClassName('tab-content');
+            for (let i = 0; i < contents.length; i++) {
+                contents[i].classList.add('hidden');
+            }
+            document.getElementById(tabName).classList.remove('hidden');
+
+            const buttons = document.getElementsByClassName('tab-button');
+            for (let i = 0; i < buttons.length; i++) {
+                buttons[i].classList.remove('active');
+            }
+            event.currentTarget.classList.add('active');
+        }
+
+        // Animated counters
+        const counters = document.querySelectorAll('.text-5xl[data-target]');
+        const speed = 200;
+
+        const animateCounter = (counter) => {
+            const target = +counter.getAttribute('data-target');
+            const updateCount = () => {
+                const count = +counter.innerText;
+                const inc = Math.ceil(target / speed);
+
+                if (count < target) {
+                    counter.innerText = Math.min(count + inc, target);
+                    setTimeout(updateCount, 10);
+                } else {
+                    counter.innerText = target.toLocaleString() + '+';
+                }
+            };
+            updateCount();
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    animateCounter(entry.target);
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        counters.forEach(counter => {
+            observer.observe(counter);
+        });
+
+        // Budget chart and table functionality
+        const budgetData = {
+            categories: [
+                { name: 'Venue Related costs', usd: 2310, ngn: 3465625 },
+                { name: 'Competition & Merch', usd: 1005, ngn: 1507000 },
+                { name: 'Food & Refreshment', usd: 1147, ngn: 1720000 },
+                { name: 'Awards (Officials)', usd: 447, ngn: 670000 },
+                { name: 'Awards (Students)', usd: 1402, ngn: 2102500 },
+                { name: 'Logistics & Accom.', usd: 333, ngn: 500000 },
+                { name: 'Media & Publicity', usd: 94, ngn: 1450000 },
+            ]
+        };
+
+        let budgetChart;
+        let currentCurrency = 'USD';
+
+        function formatCurrency(amount, currency) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: currency,
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(amount);
+        }
+
+        function updateBudget(currency) {
+            currentCurrency = currency;
+            const currencySymbol = currency === 'USD' ? '$' : '₦';
+
+            // Update buttons
+            document.getElementById('usd-btn').classList.toggle('bg-accent-yellow', currency === 'USD');
+            document.getElementById('usd-btn').classList.toggle('text-primary', currency === 'USD');
+            document.getElementById('usd-btn').classList.toggle('text-white', currency !== 'USD');
+            document.getElementById('ngn-btn').classList.toggle('bg-accent-yellow', currency === 'NGN');
+            document.getElementById('ngn-btn').classList.toggle('text-primary', currency === 'NGN');
+            document.getElementById('ngn-btn').classList.toggle('text-white', currency !== 'NGN');
+
+            const currencyKey = currency.toLowerCase();
+            const amounts = budgetData.categories.map(cat => cat[currencyKey]);
+            const subtotal = amounts.reduce((a, b) => a + b, 0);
+            const contingencies = subtotal * 0.02;
+            const total = subtotal + contingencies;
+
+            // Update chart
+            budgetChart.data.datasets[0].data = amounts;
+            budgetChart.update();
+
+            // Update table
+            const tableBody = document.getElementById('budget-table-body');
+            document.getElementById('amount-header').textContent = `Amount (${currencySymbol})`;
+            tableBody.innerHTML = '';
+            budgetData.categories.forEach(cat => {
+                const row = `<tr>
+                    <td class="py-2 pr-2 sm:pr-4">${cat.name}</td>
+                    <td class="py-2 text-right">${formatCurrency(cat[currencyKey], currency)}</td>
+                </tr>`;
+                tableBody.innerHTML += row;
+            });
+
+            document.getElementById('subtotal').textContent = formatCurrency(subtotal, currency);
+            document.getElementById('contingencies').textContent = formatCurrency(contingencies, currency);
+            document.getElementById('total').textContent = formatCurrency(total, currency);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const ctx = document.getElementById('budgetChart').getContext('2d');
+            budgetChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: budgetData.categories.map(cat => cat.name),
+                    datasets: [{
+                        label: 'Budget Breakdown',
+                        data: [],
+                        backgroundColor: [
+                            '#4A154B', '#7e2d8a', '#a64aae', '#ce6ad2', '#FECD35', '#0DBF49', '#F7323A' // Updated #FFCE32 to #0DBF49
+                        ],
+                        borderColor: '#f1f5f9',
+                        borderWidth: 2,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false // Labels are in the table
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed !== null) {
+                                        label += formatCurrency(context.parsed, currentCurrency);
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            updateBudget('USD');
+        });
+    </script>
+</body>
+</html>
